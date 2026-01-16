@@ -40,5 +40,6 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:1.0
+            ghcr.io/gan-explore/multitalk-comfyui:latest
+            ghcr.io/gan-explore/multitalk-comfyui:1.0
+
