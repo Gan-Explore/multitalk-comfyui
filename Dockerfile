@@ -21,12 +21,11 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install --upgrade pip
 
-# Torch 2.6 + CUDA 12.1
+# Torch 2.6 (CPU-only for build; CUDA installed at runtime)
 RUN pip install \
     torch==2.6.0 \
     torchvision==0.21.0 \
-    torchaudio==2.6.0 \
-    --index-url https://download.pytorch.org/whl/cu121
+    torchaudio==2.6.0
 
 RUN pip install \
     numpy==1.26.4 \
@@ -56,5 +55,14 @@ WORKDIR /workspace/ComfyUI
 
 EXPOSE 8188
 
-CMD ["python", "main.py", "--listen", "0.0.0.0", "--port", "8188"]
+CMD bash -c "\
+  if command -v nvidia-smi >/dev/null 2>&1; then \
+    echo 'GPU detected – installing CUDA torch'; \
+    pip install --no-cache-dir torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0 \
+      --index-url https://download.pytorch.org/whl/cu121; \
+  else \
+    echo 'No GPU detected – using CPU torch'; \
+  fi && \
+  python main.py --listen 0.0.0.0 --port 8188 \
+"
 
