@@ -31,6 +31,7 @@ RUN pip install \
     numpy==1.26.4 \
     scipy==1.11.4 \
     torchsde==0.2.6 \
+    av==12.0.0 \
     transformers==4.47.1 \
     huggingface_hub==0.25.2 \
     safetensors \
