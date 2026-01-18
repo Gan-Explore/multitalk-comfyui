@@ -1,12 +1,15 @@
 name: Build & Push MultiTalk ComfyUI Image
 
 on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Build & Push MultiTalk ComfyUI DEV Image
+    types:
+      - completed
 
 jobs:
   build:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     permissions:
