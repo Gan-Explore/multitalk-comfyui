@@ -1,15 +1,15 @@
 name: Build & Push MultiTalk ComfyUI DEV Image
 
 on:
-  push:
-    branches: [ "main" ]
-    paths:
-      - "Dockerfile.dev"
-      - ".github/workflows/docker-publish-dev.yml"
-  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Build & Push MultiTalk ComfyUI BASE Image
+    types:
+      - completed
 
 jobs:
   build-dev:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     permissions:
