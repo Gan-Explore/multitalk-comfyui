@@ -36,13 +36,11 @@ RUN apt-get update && apt-get install -y \
 RUN python3.10 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-RUN pip install --upgrade pip
+RUN pip install --upgrade pip setuptools wheel
 
 # ============================================================
-# Python dependencies (SPLIT: pure python vs native wheels)
+# Python dependencies (pure python / pinned)
 # ============================================================
-
-# ---- Pure Python / safe deps ----
 RUN pip install \
     numpy==1.26.4 \
     scipy==1.11.4 \
@@ -58,48 +56,56 @@ RUN pip install \
     pyyaml \
     tqdm
 
-# ---- Native deps (FORCE wheels only, no compilation) ----
+# ============================================================
+# Native deps (binary wheels only)
+# ============================================================
 RUN pip install --only-binary=:all: \
     av==12.0.0 \
     opencv-python==4.9.0.80
 
 # ============================================================
-# ComfyUI (PINNED & CLEAN)
+# ComfyUI (PINNED, STABLE)
 # ============================================================
 WORKDIR /workspace
 
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git && \
     cd ComfyUI && \
-    git checkout v0.3.10 && \
+    git checkout v0.8.1 && \
     git reset --hard && \
     git clean -fd
 
 WORKDIR /workspace/ComfyUI
 
-# REQUIRED: installs comfyui-frontend-package + runtime deps
+# Backend requirements
 RUN pip install --no-cache-dir -r requirements.txt
-# REQUIRED: frontend package (ComfyUI >= 0.8.x)
-RUN pip install --no-cache-dir comfyui-frontend-package
 
-# ------------------------------------------------------------------
-# FIX: ComfyUI upgrades huggingface_hub – force WanVideo compatibility
-# ------------------------------------------------------------------
+# Frontend + new ComfyUI aux packages (REQUIRED for 0.8.x)
 RUN pip install --no-cache-dir \
-    huggingface_hub==0.23.5 \
+    comfyui-frontend-package \
+    comfyui-workflow-templates \
+    comfyui-embedded-docs \
+    pydantic-settings \
+    alembic
+
+# Re-assert critical pins AFTER requirements
+RUN pip install --no-cache-dir \
     diffusers==0.27.2 \
-    transformers==4.39.3
-
-
+    huggingface_hub==0.23.5 \
+    transformers==4.39.3 \
+    av==12.0.0 \
+    opencv-python==4.9.0.80
 
 # ============================================================
-# Custom nodes (pinned)
+# Custom nodes (PINNED, COMPATIBLE)
 # ============================================================
 WORKDIR /workspace/ComfyUI/custom_nodes
 
+# WanVideoWrapper — compatible with diffusers 0.27.x
 RUN git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git && \
     cd ComfyUI-WanVideoWrapper && \
-    git checkout 7ebdcd4
+    git checkout 2c1f9b1
 
+# Utility nodes
 RUN git clone https://github.com/rgthree/rgthree-comfy.git
 RUN git clone https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git
 
