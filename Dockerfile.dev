@@ -1,10 +1,34 @@
-FROM ghcr.io/gan-explore/multitalk-comfyui-base:1.0
+FROM ghcr.io/gan-explore/multitalk-comfyui-base:1.1
 
 # Dev-only tools
-RUN pip install jupyterlab ipykernel
+RUN pip install jupyterlab ipykernel packaging
 
 EXPOSE 8188
 EXPOSE 8888
+
+# --------------------------------------------------
+# WanVideoWrapper (DEV ONLY, UNPINNED)
+# --------------------------------------------------
+RUN git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git \
+    /workspace/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper
+
+# --------------------------------------------------
+# Patch WanVideoWrapper for diffusers 0.27.x
+# --------------------------------------------------
+RUN sed -i \
+  's/FlowMatchEulerDiscreteScheduler/DEISMultistepScheduler/g' \
+  /workspace/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper/wanvideo/schedulers/__init__.py
+
+# --------------------------------------------------
+# Hard compatibility guard (FAIL LOUDLY)
+# --------------------------------------------------
+RUN python -c "\
+from packaging import version; \
+import diffusers; \
+assert version.parse(diffusers.__version__) < version.parse('0.28.0'), \
+  f'WanVideoWrapper DEV image requires diffusers < 0.28, found {diffusers.__version__}'; \
+print('WanVideoWrapper compatible with diffusers', diffusers.__version__) \
+"
 
 CMD bash -c "\
   set -e; \
@@ -31,5 +55,8 @@ CMD bash -c "\
     --ServerApp.password=\"\" & \
   \
   echo 'Starting ComfyUI...'; \
-  python main.py --listen 0.0.0.0 --port 8188 \
+  python main.py \
+    --listen 0.0.0.0 \
+    --port 8188 \
+    --trusted-host 0.0.0.0 \
 "
