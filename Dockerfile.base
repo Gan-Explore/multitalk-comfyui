@@ -78,6 +78,8 @@ WORKDIR /workspace/ComfyUI
 
 # REQUIRED: installs comfyui-frontend-package + runtime deps
 RUN pip install --no-cache-dir -r requirements.txt
+# REQUIRED: frontend package (ComfyUI >= 0.8.x)
+RUN pip install --no-cache-dir comfyui-frontend-package
 
 # ------------------------------------------------------------------
 # FIX: ComfyUI upgrades huggingface_hub – force WanVideo compatibility
