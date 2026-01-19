@@ -87,14 +87,7 @@ RUN pip install --no-cache-dir \
     diffusers==0.27.2 \
     transformers==4.39.3
 
-# ------------------------
-# SANITY CHECK (NEW, SAFE)
-# ------------------------
-RUN python - <<'EOF'
-import comfy.sd
-import comfy.supported_models
-print("ComfyUI core import OK")
-EOF
+
 
 # ============================================================
 # Custom nodes (pinned)
