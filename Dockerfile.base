@@ -74,6 +74,14 @@ WORKDIR /workspace/ComfyUI
 # REQUIRED: installs comfyui-frontend-package + runtime deps
 RUN pip install --no-cache-dir -r requirements.txt
 
+# ------------------------------------------------------------------
+# FIX: ComfyUI upgrades huggingface_hub – force WanVideo compatibility
+# ------------------------------------------------------------------
+RUN pip install --no-cache-dir \
+    huggingface_hub==0.23.5 \
+    diffusers==0.27.2
+
+
 # ============================================================
 # Custom nodes (pinned)
 # ============================================================
