@@ -4,7 +4,6 @@ EXPOSE 8188
 
 CMD bash -c "\
   set -e; \
-  \
   echo 'Installing CUDA-compatible torch (runtime)...'; \
   pip install --no-cache-dir torch torchvision torchaudio; \
   \
@@ -18,8 +17,5 @@ CMD bash -c "\
   python -c \"import comfy.sd, comfy.supported_models; print('ComfyUI core OK')\"; \
   \
   echo 'Starting ComfyUI...'; \
-  python main.py \
-    --listen 0.0.0.0 \
-    --port 8188 \
-    --trusted-host 0.0.0.0 \
+  python main.py --listen 0.0.0.0 --port 8188 \
 "
