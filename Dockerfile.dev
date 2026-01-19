@@ -19,6 +19,13 @@ RUN sed -i \
   's/FlowMatchEulerDiscreteScheduler/DEISMultistepScheduler/g' \
   /workspace/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper/wanvideo/schedulers/__init__.py
 
+RUN sed -i \
+  's/FlowMatchEulerDiscreteScheduler, //g' \
+  /workspace/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper/wanvideo/schedulers/__init__.py
+
+RUN grep FlowMatch \
+  /workspace/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper/wanvideo/schedulers/__init__.py
+
 # --------------------------------------------------
 # Hard compatibility guard (FAIL LOUDLY)
 # --------------------------------------------------
