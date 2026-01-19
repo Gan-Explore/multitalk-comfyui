@@ -14,11 +14,7 @@ CMD bash -c "\
     transformers==4.39.3; \
   \
   echo 'Sanity-checking ComfyUI core...'; \
-  python - <<'EOF' \
-import comfy.sd; \
-import comfy.supported_models; \
-print('ComfyUI core OK'); \
-EOF \
+  python -c \"import comfy.sd, comfy.supported_models; print('ComfyUI core OK')\"; \
   \
   echo 'Starting ComfyUI...'; \
   python main.py --listen 0.0.0.0 --port 8188 \
