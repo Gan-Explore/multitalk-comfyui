@@ -64,10 +64,15 @@ RUN pip install --only-binary=:all: \
     opencv-python==4.9.0.80
 
 # ============================================================
-# ComfyUI
+# ComfyUI (PINNED & CLEAN)
 # ============================================================
 WORKDIR /workspace
-RUN git clone https://github.com/comfyanonymous/ComfyUI.git
+
+RUN git clone https://github.com/comfyanonymous/ComfyUI.git && \
+    cd ComfyUI && \
+    git checkout 5c4f6f9 && \
+    git reset --hard && \
+    git clean -fd
 
 WORKDIR /workspace/ComfyUI
 
@@ -79,8 +84,17 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ------------------------------------------------------------------
 RUN pip install --no-cache-dir \
     huggingface_hub==0.23.5 \
-    diffusers==0.27.2
+    diffusers==0.27.2 \
+    transformers==4.39.3
 
+# ------------------------
+# SANITY CHECK (NEW, SAFE)
+# ------------------------
+RUN python - <<'EOF'
+import comfy.sd
+import comfy.supported_models
+print("ComfyUI core import OK")
+EOF
 
 # ============================================================
 # Custom nodes (pinned)
