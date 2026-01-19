@@ -1,5 +1,8 @@
 FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
 
+# ------------------------
+# Environment
+# ------------------------
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 ENV PIP_NO_CACHE_DIR=1
@@ -35,18 +38,18 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install --upgrade pip
 
-# ------------------------
-# Core Python deps (FIXED SET)
-# ------------------------
+# ============================================================
+# Python dependencies (SPLIT: pure python vs native wheels)
+# ============================================================
+
+# ---- Pure Python / safe deps ----
 RUN pip install \
     numpy==1.26.4 \
     scipy==1.11.4 \
     torchsde==0.2.6 \
-    av==12.0.0 \
     aiohttp==3.9.5 \
     diffusers==0.27.2 \
     huggingface_hub==0.23.5 \
-    opencv-python==4.9.0.80 \
     transformers==4.47.1 \
     safetensors \
     sentencepiece \
@@ -55,20 +58,25 @@ RUN pip install \
     pyyaml \
     tqdm
 
-# ------------------------
+# ---- Native deps (FORCE wheels only, no compilation) ----
+RUN pip install --only-binary=:all: \
+    av==12.0.0 \
+    opencv-python==4.9.0.80
+
+# ============================================================
 # ComfyUI
-# ------------------------
+# ============================================================
 WORKDIR /workspace
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git
 
 WORKDIR /workspace/ComfyUI
 
-# REQUIRED (frontend + runtime deps)
+# REQUIRED: installs comfyui-frontend-package + runtime deps
 RUN pip install --no-cache-dir -r requirements.txt
 
-# ------------------------
-# Custom nodes
-# ------------------------
+# ============================================================
+# Custom nodes (pinned)
+# ============================================================
 WORKDIR /workspace/ComfyUI/custom_nodes
 
 RUN git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git && \
