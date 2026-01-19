@@ -1,4 +1,4 @@
-FROM ghcr.io/gan-explore/multitalk-comfyui-base:1.1
+FROM ghcr.io/gan-explore/multitalk-comfyui-base:1.0
 
 # Dev-only tools
 RUN pip install jupyterlab ipykernel packaging
