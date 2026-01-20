@@ -1,59 +1,73 @@
 FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
 
-ENV DEBIAN_FRONTEND=noninteractive \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    VENV_PATH=/opt/venv \
-    PATH="/opt/venv/bin:$PATH"
+# ============================================================
+# Environment
+# ============================================================
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+ENV PIP_NO_CACHE_DIR=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# ============================================================
+# System dependencies (minimal, stable)
+# ============================================================
+RUN apt-get update && apt-get install -y \
     python3.10 \
     python3.10-venv \
     python3-pip \
     git \
+    wget \
+    curl \
     ffmpeg \
     libgl1 \
     libglib2.0-0 \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-RUN python3.10 -m venv ${VENV_PATH} && pip install --upgrade pip
+# ============================================================
+# Python venv
+# ============================================================
+RUN python3.10 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-RUN pip install \
-    torch==2.1.2+cu121 \
-    torchvision==0.16.2+cu121 \
-    torchaudio==2.1.2+cu121 \
-    --extra-index-url https://download.pytorch.org/whl/cu121
+RUN pip install --upgrade pip
 
-RUN pip install \
-    numpy==1.26.4 \
-    scipy==1.11.4 \
-    diffusers==0.27.2 \
-    transformers==4.39.3 \
-    accelerate==0.27.2 \
-    huggingface_hub==0.23.5 \
-    safetensors==0.4.2 \
-    einops==0.7.0 \
-    tqdm==4.66.2 \
-    pyyaml==6.0.1 \
-    av==12.0.0 \
-    opencv-python==4.9.0.80
-
+# ============================================================
+# Copy frozen requirements
+# ============================================================
 WORKDIR /workspace
+COPY requirements.lock /workspace/requirements.lock
+
+# ============================================================
+# Install frozen Python deps (NO resolver roulette)
+# ============================================================
+RUN pip install --no-cache-dir -r /workspace/requirements.lock
+
+# ============================================================
+# ComfyUI (pinned commit, no requirements.txt)
+# ============================================================
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git && \
     cd ComfyUI && \
-    git checkout 5c4f6f9 && \
-    pip install -r requirements.txt
+    git checkout 5c4f6f9
 
+WORKDIR /workspace/ComfyUI
+
+# ============================================================
+# Custom nodes (pinned, explicit)
+# ============================================================
 WORKDIR /workspace/ComfyUI/custom_nodes
 
+# WanVideo / InfiniteTalk wrapper (pinned)
 RUN git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git && \
     cd ComfyUI-WanVideoWrapper && \
-    git checkout 3d7801c
+    git checkout 3d7801cee4c8e3106078dd9b9f146caee95069ba
 
+# Video helpers
 RUN git clone https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git
 
-RUN echo "InfiniteTalk-MultiTalk Appliance v1.0 (SEALED)" \
-    > /workspace/SEALED_APPLIANCE.txt
+# rgthree UI helpers
+RUN git clone https://github.com/rgthree/rgthree-comfy.git
 
+# ============================================================
+# Final working directory
+# ============================================================
 WORKDIR /workspace/ComfyUI
