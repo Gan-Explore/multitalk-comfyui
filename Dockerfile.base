@@ -35,7 +35,9 @@ ENV PATH="/workspace/.venv/bin:$PATH"
 COPY requirements.lock /workspace/requirements.lock
 
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r /workspace/requirements.lock
+    pip install --no-cache-dir \
+      --extra-index-url https://download.pytorch.org/whl/cu121 \
+      -r /workspace/requirements.lock
 
 # ============================================================
 # ComfyUI (PINNED)
