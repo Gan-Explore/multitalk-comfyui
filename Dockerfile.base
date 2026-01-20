@@ -57,7 +57,7 @@ RUN git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git && \
 
 # --- InfiniteTalk / MultiTalk ---
 # (keep your existing pinned commit here if already present)
-RUN git clone --depth 1 https://github.com/kijai/ComfyUI-InfiniteTalk.git
+
 
 # --- Video helpers (non-critical, stable) ---
 RUN git clone https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git
