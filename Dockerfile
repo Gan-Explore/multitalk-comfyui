@@ -20,14 +20,16 @@ EXPOSE 8188 8888
 # ============================================================
 CMD bash -c "\
   echo '=== InfiniteTalk-MultiTalk Appliance v1.0 ==='; \
-  echo 'Starting JupyterLab on :8888'; \
+  echo 'Starting JupyterLab on :8888 (no auth)'; \
   jupyter lab \
     --ip=0.0.0.0 \
     --port=8888 \
     --no-browser \
     --allow-root \
-    --ServerApp.token=\"${JUPYTER_TOKEN}\" \
-    --ServerApp.password=\"\" & \
+    --ServerApp.token='' \
+    --ServerApp.password='' \
+    --ServerApp.disable_check_xsrf=True \
+    --ServerApp.allow_origin='*' & \
   \
   echo 'Starting ComfyUI on :8188'; \
   python main.py --listen 0.0.0.0 --port 8188 \
