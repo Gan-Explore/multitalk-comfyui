@@ -1,4 +1,4 @@
-name: Build InfiniteTalk Appliance (v1.0)
+name: Build InfiniteTalk Appliance (v1.0.1)
 
 on:
   workflow_dispatch:
