@@ -18,20 +18,12 @@ EXPOSE 8188 8888
 # - No upgrades
 # - No mutation
 # ============================================================
-CMD bash -c "\
-  echo '=== InfiniteTalk-MultiTalk Appliance v1.0 ==='; \
-  echo 'Starting JupyterLab on :8888 (no auth)'; \
-  jupyter lab \
-    --notebook-dir=/workspace \
-    --ip=0.0.0.0 \
-    --port=8888 \
-    --no-browser \
-    --allow-root \
-    --ServerApp.token='' \
-    --ServerApp.password='' \
-    --ServerApp.disable_check_xsrf=True \
-    --ServerApp.allow_origin='*' & \
-  \
-  echo 'Starting ComfyUI on :8188'; \
+CMD ["/bin/bash", "-c", "\
+  source /workspace/.venv/bin/activate && \
+  echo '=== InfiniteTalk-MultiTalk Appliance v1.0 ===' && \
+  echo 'Starting JupyterLab on :8888 (no auth)' && \
+  jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root & \
+  echo 'Starting ComfyUI on :8188' && \
+  cd /workspace/ComfyUI && \
   python main.py --listen 0.0.0.0 --port 8188 \
-"
+"]
