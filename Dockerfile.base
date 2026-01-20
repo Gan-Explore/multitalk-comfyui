@@ -1,15 +1,8 @@
 FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
 
-# ============================================================
-# Environment
-# ============================================================
 ENV DEBIAN_FRONTEND=noninteractive
-ENV PYTHONUNBUFFERED=1
-ENV PIP_NO_CACHE_DIR=1
+WORKDIR /workspace
 
-# ============================================================
-# System dependencies (minimal, stable)
-# ============================================================
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -22,16 +15,15 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
  && rm -rf /var/lib/apt/lists/*
 
-# ============================================================
-# Python venv (SEALED)
-# ============================================================
-WORKDIR /workspace
+# ----------------------------
+# Python venv (MUST exist)
+# ----------------------------
 RUN python3.10 -m venv /workspace/.venv
 ENV PATH="/workspace/.venv/bin:$PATH"
 
-# ============================================================
-# Python dependencies (PINNED — CRITICAL)
-# ============================================================
+# ----------------------------
+# Python deps
+# ----------------------------
 COPY requirements.lock /workspace/requirements.lock
 
 RUN pip install --upgrade pip && \
@@ -39,33 +31,19 @@ RUN pip install --upgrade pip && \
       --extra-index-url https://download.pytorch.org/whl/cu121 \
       -r /workspace/requirements.lock
 
-# ============================================================
-# ComfyUI (PINNED)
-# ============================================================
-WORKDIR /workspace
+# ----------------------------
+# ComfyUI
+# ----------------------------
 RUN git clone --branch v0.3.28 --depth 1 https://github.com/comfyanonymous/ComfyUI.git
 
-# ============================================================
-# Custom Nodes
-# ============================================================
-WORKDIR /workspace/ComfyUI/custom_nodes
-
-# --- WanVideoWrapper (PINNED, KNOWN-GOOD) ---
-RUN git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git && \
+# ----------------------------
+# WanVideoWrapper (includes InfiniteTalk & MultiTalk)
+# ----------------------------
+WORKDIR /workspace/ComfyUI
+RUN mkdir -p custom_nodes && \
+    cd custom_nodes && \
+    git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git && \
     cd ComfyUI-WanVideoWrapper && \
     git checkout 3d7801cee4c8e3106078dd9b9f146caee95069ba
 
-# --- InfiniteTalk / MultiTalk ---
-# (keep your existing pinned commit here if already present)
-
-
-# --- Video helpers (non-critical, stable) ---
-RUN git clone https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git
-
-# --- rgthree UI helpers ---
-RUN git clone https://github.com/rgthree/rgthree-comfy.git
-
-# ============================================================
-# Final working directory
-# ============================================================
 WORKDIR /workspace/ComfyUI
