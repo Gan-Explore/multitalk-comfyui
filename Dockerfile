@@ -1,4 +1,4 @@
-FROM ghcr.io/gan-explore/infinitetalk-base:1.0
+FROM ghcr.io/gan-explore/multitalk-comfyui-base:1.0
 
 # ============================================================
 # Install JupyterLab (ONLY allowed runtime addition)
