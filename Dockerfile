@@ -22,6 +22,7 @@ CMD bash -c "\
   echo '=== InfiniteTalk-MultiTalk Appliance v1.0 ==='; \
   echo 'Starting JupyterLab on :8888 (no auth)'; \
   jupyter lab \
+    --notebook-dir=/workspace \
     --ip=0.0.0.0 \
     --port=8888 \
     --no-browser \
