@@ -1,0 +1,58 @@
+# ============================
+# Core runtime (pinned)
+# ============================
+python-dateutil==2.9.0.post0
+typing_extensions==4.9.0
+packaging==23.2
+
+# ============================
+# Web / API (minimal)
+# ============================
+fastapi==0.110.0
+uvicorn==0.27.1
+pydantic==2.6.4
+pydantic-core==2.16.3
+starlette==0.36.3
+aiohttp==3.9.5
+requests==2.31.0
+
+# ============================
+# Numerical / tensor utils
+# ============================
+numpy==1.26.4
+einops==0.7.0
+
+# ============================
+# ML / model IO
+# ============================
+torch==2.2.1
+torchvision==0.17.1
+torchaudio==2.2.1
+safetensors==0.4.2
+huggingface_hub==0.23.5
+
+# ============================
+# Image / video basics
+# ============================
+Pillow==10.2.0
+opencv-python==4.9.0.80
+imageio==2.34.0
+imageio-ffmpeg==0.4.9
+
+# ============================
+# Audio
+# ============================
+soundfile==0.12.1
+librosa==0.10.1
+
+# ============================
+# Utilities
+# ============================
+psutil==5.9.8
+tqdm==4.66.2
+PyYAML==6.0.1
+
+# ============================
+# Serialization / misc
+# ============================
+orjson==3.9.15
