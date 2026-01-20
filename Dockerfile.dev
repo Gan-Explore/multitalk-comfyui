@@ -6,11 +6,17 @@ RUN pip install jupyterlab ipykernel packaging
 EXPOSE 8188
 EXPOSE 8888
 
-# --------------------------------------------------
-# WanVideoWrapper (DEV ONLY, UNPINNED)
-# --------------------------------------------------
-RUN git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git \
-    /workspace/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper
+# ============================================================
+# WanVideoWrapper (contains WanVideo + InfiniteTalk + MultiTalk)
+# ============================================================
+
+WORKDIR /workspace/ComfyUI
+
+RUN mkdir -p custom_nodes && \
+    cd custom_nodes && \
+    git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git && \
+    cd ComfyUI-WanVideoWrapper && \
+    git checkout 3d7801cee4c8e3106078dd9b9f146caee95069ba
 
 # --------------------------------------------------
 # Patch WanVideoWrapper for diffusers 0.27.x
