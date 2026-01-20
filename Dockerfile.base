@@ -43,9 +43,7 @@ RUN pip install --upgrade pip && \
 # ComfyUI (PINNED)
 # ============================================================
 WORKDIR /workspace
-RUN git clone https://github.com/comfyanonymous/ComfyUI.git && \
-    cd ComfyUI && \
-    git checkout 8c1f9b3e6b1a9d1b71c5c0d35e2b7a41c6a6d4e7
+RUN git clone --branch v0.3.28 --depth 1 https://github.com/comfyanonymous/ComfyUI.git
 
 # ============================================================
 # Custom Nodes
