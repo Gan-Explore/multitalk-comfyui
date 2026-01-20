@@ -45,9 +45,7 @@ RUN pip install --no-cache-dir -r /workspace/requirements.lock
 # ============================================================
 # ComfyUI (pinned commit, no requirements.txt)
 # ============================================================
-RUN git clone https://github.com/comfyanonymous/ComfyUI.git && \
-    cd ComfyUI && \
-    git checkout 5c4f6f9
+RUN git clone --branch v0.8.1 --depth 1 https://github.com/comfyanonymous/ComfyUI.git
 
 WORKDIR /workspace/ComfyUI
 
