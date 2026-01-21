@@ -10,7 +10,7 @@ env:
   IMAGE_NAMESPACE: gan-explore
   BASE_IMAGE: multitalk-comfyui-base
   PROD_IMAGE: multitalk-comfyui
-  VERSION: 1.2.1
+  VERSION: 1.2.2
 
 jobs:
   build:
