@@ -20,10 +20,11 @@ EXPOSE 8188 8888
 # Start services
 # --------------------------------------------------
 CMD ["/bin/bash", "-c", "\
-  source /opt/app/.venv/bin/activate && \
+  echo 'Using Python:' && \
+  /opt/app/.venv/bin/python --version && \
   echo 'Starting JupyterLab on :8888' && \
-  jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root & \
+  /opt/app/.venv/bin/jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root & \
   echo 'Starting ComfyUI on :8188' && \
   cd /opt/app/ComfyUI && \
-  python main.py --listen 0.0.0.0 --port 8188 \
+  /opt/app/.venv/bin/python main.py --listen 0.0.0.0 --port 8188 \
 "]
