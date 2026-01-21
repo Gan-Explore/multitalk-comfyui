@@ -1,5 +1,5 @@
 # ⚠️ IMPORTANT: must match the base version you just built
-FROM ghcr.io/gan-explore/multitalk-comfyui-base:1.1.4
+FROM ghcr.io/gan-explore/multitalk-comfyui-base:1.1.5
 
 # ----------------------------
 # Install Jupyter INTO THE VENV
