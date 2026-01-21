@@ -36,6 +36,7 @@ torchsde==0.2.6
 omegaconf==2.3.0
 safetensors==0.4.3
 tqdm==4.66.4
+comfyui-frontend-package==1.5.3
 
 # ------------------------------------------------------------
 # Vision / tensor helpers (video + face pipelines)
