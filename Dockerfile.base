@@ -3,6 +3,9 @@ FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /workspace
 
+# --------------------------------------------------
+# System dependencies
+# --------------------------------------------------
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -15,15 +18,15 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
  && rm -rf /var/lib/apt/lists/*
 
-# ----------------------------
-# Python venv (MUST exist)
-# ----------------------------
+# --------------------------------------------------
+# Python virtual environment (CRITICAL)
+# --------------------------------------------------
 RUN python3.10 -m venv /workspace/.venv
 ENV PATH="/workspace/.venv/bin:$PATH"
 
-# ----------------------------
-# Python deps
-# ----------------------------
+# --------------------------------------------------
+# Python dependencies (LOCKED)
+# --------------------------------------------------
 COPY requirements.lock /workspace/requirements.lock
 
 RUN pip install --upgrade pip && \
@@ -31,15 +34,16 @@ RUN pip install --upgrade pip && \
       --extra-index-url https://download.pytorch.org/whl/cu121 \
       -r /workspace/requirements.lock
 
-# ----------------------------
-# ComfyUI
-# ----------------------------
+# --------------------------------------------------
+# ComfyUI (PINNED STABLE TAG)
+# --------------------------------------------------
 RUN git clone --branch v0.3.28 --depth 1 https://github.com/comfyanonymous/ComfyUI.git
 
-# ----------------------------
-# WanVideoWrapper (includes InfiniteTalk & MultiTalk)
-# ----------------------------
+# --------------------------------------------------
+# WanVideoWrapper (includes InfiniteTalk + MultiTalk)
+# --------------------------------------------------
 WORKDIR /workspace/ComfyUI
+
 RUN mkdir -p custom_nodes && \
     cd custom_nodes && \
     git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git && \
