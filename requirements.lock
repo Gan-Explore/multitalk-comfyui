@@ -44,7 +44,7 @@ comfyui-frontend-package==1.5.3
 opencv-python-headless==4.9.0.80
 kornia==0.7.2
 pillow==10.3.0
-xformers==0.0.23.post1
+xformers==0.0.22.post7
 
 # ------------------------------------------------------------
 # Audio / Video (InfiniteTalk & WanVideo)
