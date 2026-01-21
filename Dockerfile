@@ -1,4 +1,4 @@
-FROM ghcr.io/gan-explore/multitalk-comfyui-base:1.2.0
+FROM ghcr.io/gan-explore/multitalk-comfyui-base:1.2.1
 
 # --------------------------------------------------
 # Install Jupyter into venv
