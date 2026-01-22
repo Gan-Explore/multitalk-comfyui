@@ -30,9 +30,10 @@ RUN /opt/app/.venv/bin/python -m pip install --upgrade pip
 # --------------------------------------------------
 COPY requirements.lock /opt/app/requirements.lock
 
-RUN /opt/app/.venv/bin/pip install --no-cache-dir \
+RUN /opt/app/.venv/bin/pip install \
       --extra-index-url https://download.pytorch.org/whl/cu121 \
-      -r /opt/app/requirements.lock
+      -r /opt/app/requirements.lock \
+      -v
 
 # --------------------------------------------------
 # ComfyUI
