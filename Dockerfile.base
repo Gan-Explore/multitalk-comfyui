@@ -1,5 +1,8 @@
 FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
 
+# --------------------------------------------------
+# Environment
+# --------------------------------------------------
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /opt/app
 
@@ -22,16 +25,10 @@ RUN apt-get update && apt-get install -y \
 # Python virtual environment
 # --------------------------------------------------
 RUN python3.10 -m venv /opt/app/.venv
-
 RUN /opt/app/.venv/bin/python -m pip install --upgrade pip
 
 # --------------------------------------------------
-# Python dependencies
-# --------------------------------------------------
-COPY requirements.lock /opt/app/requirements.lock
-
-# --------------------------------------------------
-# Phase 1: Core Python + Torch stack (CUDA-safe)
+# Phase 1: Core ML stack (CUDA 12.1 – wheel safe)
 # --------------------------------------------------
 RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     --extra-index-url https://download.pytorch.org/whl/cu121 \
@@ -42,7 +39,7 @@ RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     scipy==1.11.4
 
 # --------------------------------------------------
-# Phase 2: ComfyUI core deps (NO frontend yet)
+# Phase 2: Core ComfyUI dependencies
 # --------------------------------------------------
 RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     diffusers==0.30.2 \
@@ -58,13 +55,13 @@ RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     tokenizers==0.19.1
 
 # --------------------------------------------------
-# Clone ComfyUI (must exist before frontend)
+# Clone ComfyUI (must exist before frontend install)
 # --------------------------------------------------
 WORKDIR /opt/app
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git
 
 # --------------------------------------------------
-# Phase 3: Video + Audio deps
+# Phase 3: Vision / Audio / Video (wheel-safe pins)
 # --------------------------------------------------
 RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     opencv-python-headless==4.9.0.80 \
@@ -75,8 +72,13 @@ RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     av==11.0.0
 
 # --------------------------------------------------
-# Phase 4: Acceleration + UI
+# Phase 4: Acceleration + Frontend
 # --------------------------------------------------
 RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     xformers==0.0.22.post7 \
     comfyui-frontend-package==1.5.3
+
+# --------------------------------------------------
+# Default workdir
+# --------------------------------------------------
+WORKDIR /opt/app
