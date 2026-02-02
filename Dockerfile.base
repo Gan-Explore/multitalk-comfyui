@@ -30,29 +30,53 @@ RUN /opt/app/.venv/bin/python -m pip install --upgrade pip
 # --------------------------------------------------
 COPY requirements.lock /opt/app/requirements.lock
 
-RUN set -o pipefail && \
-    /opt/app/.venv/bin/pip install \
-      --extra-index-url https://download.pytorch.org/whl/cu121 \
-      -r /opt/app/requirements.lock \
-      --log /tmp/pip-error.log || \
-    (echo "========== PIP FAILURE LOG ==========" && \
-     cat /tmp/pip-error.log && \
-     echo "====================================" && \
-     exit 1)
-
-
 # --------------------------------------------------
-# ComfyUI
+# Phase 1: Core Python + Torch stack (CUDA-safe)
 # --------------------------------------------------
-RUN git clone --branch v0.3.28 --depth 1 https://github.com/comfyanonymous/ComfyUI.git
+RUN /opt/app/.venv/bin/pip install --no-cache-dir \
+    --extra-index-url https://download.pytorch.org/whl/cu121 \
+    torch==2.1.2+cu121 \
+    torchvision==0.16.2+cu121 \
+    torchaudio==2.1.2+cu121 \
+    numpy==1.26.4 \
+    scipy==1.11.4
 
 # --------------------------------------------------
-# WanVideoWrapper
+# Phase 2: ComfyUI core deps (NO frontend yet)
 # --------------------------------------------------
-WORKDIR /opt/app/ComfyUI
+RUN /opt/app/.venv/bin/pip install --no-cache-dir \
+    diffusers==0.30.2 \
+    transformers==4.41.2 \
+    accelerate==0.33.0 \
+    einops==0.7.0 \
+    torchsde==0.2.6 \
+    omegaconf==2.3.0 \
+    safetensors==0.4.3 \
+    tqdm==4.66.4 \
+    packaging==24.1 \
+    regex==2024.5.15 \
+    tokenizers==0.19.1
 
-RUN mkdir -p custom_nodes && \
-    cd custom_nodes && \
-    git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git && \
-    cd ComfyUI-WanVideoWrapper && \
-    git checkout 3d7801cee4c8e3106078dd9b9f146caee95069ba
+# --------------------------------------------------
+# Clone ComfyUI (must exist before frontend)
+# --------------------------------------------------
+WORKDIR /opt/app
+RUN git clone https://github.com/comfyanonymous/ComfyUI.git
+
+# --------------------------------------------------
+# Phase 3: Video + Audio deps
+# --------------------------------------------------
+RUN /opt/app/.venv/bin/pip install --no-cache-dir \
+    opencv-python-headless==4.9.0.80 \
+    kornia==0.7.2 \
+    pillow==10.3.0 \
+    soundfile==0.12.1 \
+    librosa==0.10.2 \
+    av==11.0.0
+
+# --------------------------------------------------
+# Phase 4: Acceleration + UI
+# --------------------------------------------------
+RUN /opt/app/.venv/bin/pip install --no-cache-dir \
+    xformers==0.0.22.post7 \
+    comfyui-frontend-package==1.5.3
