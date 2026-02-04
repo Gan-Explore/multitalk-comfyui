@@ -68,8 +68,7 @@ RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     opencv-python-headless==4.9.0.80 \
     kornia==0.7.2 \
     pillow==10.3.0 \
-    soundfile==0.12.1 \
-    av==11.0.0
+    soundfile==0.12.1
 
 # --------------------------------------------------
 # Phase 4: Acceleration + Frontend
