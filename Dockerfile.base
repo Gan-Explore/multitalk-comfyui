@@ -32,11 +32,9 @@ RUN /opt/app/.venv/bin/python -m pip install --upgrade pip
 # NumPy MUST stay < 2.0
 RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     --extra-index-url https://download.pytorch.org/whl/cu121 \
-    torch==2.3.1+cu121 \
-    torchvision==0.18.1+cu121 \
-    torchaudio==2.3.1+cu121 \
-    numpy==1.26.4 \
-    scipy==1.11.4
+    torch==2.4.0+cu121 \
+    torchvision==0.19.0+cu121 \
+    torchaudio==2.4.0+cu121
 
 # --------------------------------------------------
 # Clone ComfyUI (static snapshot at build time)
