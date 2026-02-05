@@ -71,7 +71,7 @@ RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     soundfile==0.12.1
 
 # --------------------------------------------------
-# Phase 4: ComfyUI frontend (REAL version)
+# Phase 4: ComfyUI frontend (real, existing version)
 # --------------------------------------------------
 RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     comfyui-frontend-package==1.39.6
