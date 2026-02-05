@@ -1,67 +1,13 @@
-# NOTE:
+# ==================================================
+# STATIC APPLIANCE NOTE
+# --------------------------------------------------
 # This file is NOT used during Docker builds.
-# ComfyUI runtime dependencies are installed from:
+#
+# Runtime dependencies are installed from:
 #   /opt/app/ComfyUI/requirements.txt
-
-
-
-# ============================================================
-# DO NOT MODIFY
-# Frozen working dependency set for RunPod appliance
-# ComfyUI + WanVideo + InfiniteTalk + MultiTalk
-# CUDA 12.1 / PyTorch 2.1.x
-# ============================================================
-
-# ------------------------------------------------------------
-# Core ML stack (CUDA 12.1)
-# ------------------------------------------------------------
-torch==2.1.2+cu121
-torchvision==0.16.2+cu121
-torchaudio==2.1.2+cu121
-
-# ------------------------------------------------------------
-# HuggingFace / Diffusers (video-safe)
-# ------------------------------------------------------------
-diffusers==0.30.2
-transformers==4.41.2
-accelerate==0.33.0
-tokenizers==0.19.1
-regex==2024.5.15
-packaging==24.1
-
-# ------------------------------------------------------------
-# Numerical stability
-# ------------------------------------------------------------
-numpy==1.26.4
-scipy==1.11.4
-
-# ------------------------------------------------------------
-# Core ComfyUI / Diffusion utilities (REQUIRED)
-# ------------------------------------------------------------
-einops==0.7.0
-torchsde==0.2.6
-omegaconf==2.3.0
-safetensors==0.4.3
-tqdm==4.66.4
-comfyui-frontend-package==1.5.3
-
-# ------------------------------------------------------------
-# Vision / tensor helpers (video + face pipelines)
-# ------------------------------------------------------------
-opencv-python-headless==4.9.0.80
-kornia==0.7.2
-pillow==10.3.0
-xformers==0.0.22.post7
-
-# ------------------------------------------------------------
-# Audio / Video (InfiniteTalk & WanVideo)
-# ------------------------------------------------------------
-soundfile==0.12.1
-librosa==0.10.2
-av==11.0.0
-
-# ------------------------------------------------------------
-# Networking / async
-# ------------------------------------------------------------
-aiohttp==3.9.5
-requests==2.32.3
+#
+# Core foundations are pinned in Dockerfile.base:
+#   - Python 3.10
+#   - NumPy 1.26.4
+#   - PyTorch 2.3.1 + CUDA 12.1
+# ==================================================
