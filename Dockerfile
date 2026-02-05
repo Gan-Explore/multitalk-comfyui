@@ -1,79 +1,30 @@
-FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
+FROM ghcr.io/gan-explore/multitalk-comfyui-base:v1.3.5
 
 # --------------------------------------------------
-# Environment
-# --------------------------------------------------
-ENV DEBIAN_FRONTEND=noninteractive
-WORKDIR /opt/app
-
-# --------------------------------------------------
-# System dependencies
-# --------------------------------------------------
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    wget \
-    ffmpeg \
-    libsndfile1 \
-    libgl1 \
-    libglib2.0-0 \
-    python3.10 \
-    python3.10-venv \
-    python3-pip \
- && rm -rf /var/lib/apt/lists/*
-
-# --------------------------------------------------
-# Python virtual environment
-# --------------------------------------------------
-RUN python3.10 -m venv /opt/app/.venv
-RUN /opt/app/.venv/bin/python -m pip install --upgrade pip
-
-# --------------------------------------------------
-# Phase 1: Core ML stack (CUDA 12.1, wheel-safe)
+# Install Jupyter into venv
 # --------------------------------------------------
 RUN /opt/app/.venv/bin/pip install --no-cache-dir \
-    --extra-index-url https://download.pytorch.org/whl/cu121 \
-    torch==2.1.2+cu121 \
-    torchvision==0.16.2+cu121 \
-    torchaudio==2.1.2+cu121 \
-    numpy==1.26.4 \
-    scipy==1.11.4
+    jupyterlab==4.1.6 \
+    ipykernel==6.29.3
 
 # --------------------------------------------------
-# Phase 2: Core ComfyUI dependencies
+# Prepare workspace mounts (RunPod-safe)
 # --------------------------------------------------
-RUN /opt/app/.venv/bin/pip install --no-cache-dir \
-    diffusers==0.30.2 \
-    transformers==4.41.2 \
-    accelerate==0.33.0 \
-    einops==0.7.0 \
-    torchsde==0.2.6 \
-    omegaconf==2.3.0 \
-    safetensors==0.4.3 \
-    tqdm==4.66.4 \
-    packaging==24.1 \
-    regex==2024.5.15 \
-    tokenizers==0.19.1
+RUN mkdir -p /workspace/models /workspace/output && \
+    ln -s /workspace/models /opt/app/ComfyUI/models && \
+    ln -s /workspace/output /opt/app/ComfyUI/output
+
+EXPOSE 8188 8888
 
 # --------------------------------------------------
-# Clone ComfyUI
+# Start services
 # --------------------------------------------------
-WORKDIR /opt/app
-RUN git clone https://github.com/comfyanonymous/ComfyUI.git
-
-# --------------------------------------------------
-# Phase 3: Vision / Audio (CI-safe only)
-# --------------------------------------------------
-RUN /opt/app/.venv/bin/pip install --no-cache-dir \
-    opencv-python-headless==4.9.0.80 \
-    kornia==0.7.2 \
-    pillow==10.3.0 \
-    soundfile==0.12.1
-
-# --------------------------------------------------
-# Phase 4: ComfyUI frontend (REAL version)
-# --------------------------------------------------
-RUN /opt/app/.venv/bin/pip install --no-cache-dir \
-    comfyui-frontend-package==1.39.6
-
-WORKDIR /opt/app
+CMD ["/bin/bash", "-c", "\
+  echo 'Using Python:' && \
+  /opt/app/.venv/bin/python --version && \
+  echo 'Starting JupyterLab on :8888' && \
+  /opt/app/.venv/bin/jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root & \
+  echo 'Starting ComfyUI on :8188' && \
+  cd /opt/app/ComfyUI && \
+  /opt/app/.venv/bin/python main.py --listen 0.0.0.0 --port 8188 \
+"]
