@@ -9,7 +9,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: gan-explore/multitalk-comfyui
   BASE_IMAGE_NAME: gan-explore/multitalk-comfyui-base
-  VERSION: v1.4.4
+  VERSION: v1.4.5
 
 jobs:
   build-base:
