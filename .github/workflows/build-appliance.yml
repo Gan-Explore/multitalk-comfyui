@@ -7,22 +7,15 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAMESPACE: gan-explore
-  BASE_IMAGE: multitalk-comfyui-base
-  PROD_IMAGE: multitalk-comfyui
+  IMAGE_NAME: gan-explore/multitalk-comfyui
+  BASE_IMAGE_NAME: gan-explore/multitalk-comfyui-base
   VERSION: v1.3.5
 
 jobs:
-  build:
+  build-base:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Echo build version
-        run: |
-          echo "Building BASE and RUNTIME images with VERSION=${{ env.VERSION }}"
+      - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -34,9 +27,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # --------------------------------------------------
-      # Build BASE image (contains venv + deps)
-      # --------------------------------------------------
       - name: Build base image
         uses: docker/build-push-action@v5
         with:
@@ -44,11 +34,24 @@ jobs:
           file: Dockerfile.base
           push: true
           tags: |
-            ghcr.io/${{ env.IMAGE_NAMESPACE }}/${{ env.BASE_IMAGE }}:${{ env.VERSION }}
+            ghcr.io/${{ env.BASE_IMAGE_NAME }}:${{ env.VERSION }}
 
-      # --------------------------------------------------
-      # Build RUNTIME image (adds Jupyter + CMD)
-      # --------------------------------------------------
+  build-runtime:
+    needs: build-base
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build runtime image
         uses: docker/build-push-action@v5
         with:
@@ -56,4 +59,4 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ env.IMAGE_NAMESPACE }}/${{ env.PROD_IMAGE }}:${{ env.VERSION }}
+            ghcr.io/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
