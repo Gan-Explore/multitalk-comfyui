@@ -1,4 +1,4 @@
-FROM ghcr.io/gan-explore/multitalk-comfyui-base:v1.3.9
+FROM ghcr.io/gan-explore/multitalk-comfyui-base:v1.4.0
 
 # --------------------------------------------------
 # Jupyter (optional but useful)
