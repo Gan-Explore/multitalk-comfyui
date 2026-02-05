@@ -1,3 +1,10 @@
+# NOTE:
+# This file is NOT used during Docker builds.
+# ComfyUI runtime dependencies are installed from:
+#   /opt/app/ComfyUI/requirements.txt
+
+
+
 # ============================================================
 # DO NOT MODIFY
 # Frozen working dependency set for RunPod appliance
