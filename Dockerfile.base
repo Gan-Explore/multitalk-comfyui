@@ -1,8 +1,5 @@
 FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
 
-# --------------------------------------------------
-# Environment
-# --------------------------------------------------
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /opt/app
 
@@ -29,46 +26,42 @@ RUN python3.10 -m venv /opt/app/.venv
 RUN /opt/app/.venv/bin/python -m pip install --upgrade pip
 
 # --------------------------------------------------
-# Core ML stack (CUDA-safe)
+# 🔒 CORE FOUNDATION (LOCKED)
 # --------------------------------------------------
+# PyTorch ≥ 2.3 required by modern ComfyUI
+# NumPy MUST stay < 2.0
 RUN /opt/app/.venv/bin/pip install --no-cache-dir \
-    --extra-index-url https://download.pytorch.org/whl/cu121 \
-    torch==2.1.2+cu121 \
-    torchvision==0.16.2+cu121 \
-    torchaudio==2.1.2+cu121 \
+    --index-url https://download.pytorch.org/whl/cu121 \
+    torch==2.3.1+cu121 \
+    torchvision==0.18.1+cu121 \
+    torchaudio==2.3.1+cu121 \
     numpy==1.26.4 \
     scipy==1.11.4
 
 # --------------------------------------------------
-# Clone ComfyUI
+# Clone ComfyUI (static snapshot at build time)
 # --------------------------------------------------
 WORKDIR /opt/app
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git
 
 # --------------------------------------------------
 # 🔑 Install ComfyUI-declared runtime dependencies
-# This covers:
-# - aiohttp
-# - sqlalchemy
-# - alembic
-# - pydantic
-# - typing_extensions
-# - future additions
+# (DB, web server, assets, migrations, etc.)
 # --------------------------------------------------
 RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     -r /opt/app/ComfyUI/requirements.txt
 
 # --------------------------------------------------
-# Optional but commonly needed vision/audio helpers
-# (CI-safe, no native compilation)
+# Additional helpers (CI-safe, no native compile)
 # --------------------------------------------------
 RUN /opt/app/.venv/bin/pip install --no-cache-dir \
-    opencv-python-headless \
-    pillow \
-    soundfile
+    opencv-python-headless==4.9.0.80 \
+    pillow==10.3.0 \
+    soundfile==0.12.1 \
+    httpx==0.27.0
 
 # --------------------------------------------------
-# ComfyUI frontend package (real, existing version)
+# ComfyUI frontend (real, existing version)
 # --------------------------------------------------
 RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     comfyui-frontend-package==1.39.6
