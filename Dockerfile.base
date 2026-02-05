@@ -74,7 +74,7 @@ RUN /opt/app/.venv/bin/pip install --no-cache-dir \
 # Phase 4: Acceleration + Frontend
 # --------------------------------------------------
 RUN /opt/app/.venv/bin/pip install --no-cache-dir \
-    comfyui-frontend-package==1.5.3
+    comfyui-frontend-package==1.39.6
 
 # --------------------------------------------------
 # Default workdir
