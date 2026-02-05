@@ -8,7 +8,7 @@ RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     ipykernel==6.29.3
 
 # --------------------------------------------------
-# RunPod-safe workspace
+# RunPod-safe workspace links
 # --------------------------------------------------
 RUN mkdir -p /workspace/models /workspace/output && \
     ln -s /workspace/models /opt/app/ComfyUI/models && \
@@ -17,11 +17,24 @@ RUN mkdir -p /workspace/models /workspace/output && \
 EXPOSE 8188 8888
 
 # --------------------------------------------------
-# Start services (NO JUPYTER TOKEN / PASSWORD)
+# Startup (appliance-grade, idempotent)
 # --------------------------------------------------
 CMD ["/bin/bash", "-c", "\
+  set -e && \
+  echo 'Ensuring persistent ComfyUI user directory...' && \
+  mkdir -p /workspace/user && \
+  if [ ! -L /opt/app/ComfyUI/user ]; then \
+    if [ -d /opt/app/ComfyUI/user ]; then \
+      echo 'Migrating existing ComfyUI user data to /workspace...' && \
+      mv /opt/app/ComfyUI/user/* /workspace/user/ 2>/dev/null || true && \
+      rm -rf /opt/app/ComfyUI/user; \
+    fi; \
+    ln -s /workspace/user /opt/app/ComfyUI/user; \
+  fi && \
+  echo 'User directory ready.' && \
+  \
   echo 'Python:' && /opt/app/.venv/bin/python --version && \
-  echo 'Starting JupyterLab (no auth) :8888' && \
+  echo 'Starting JupyterLab (no auth) on :8888' && \
   /opt/app/.venv/bin/jupyter lab \
     --ip=0.0.0.0 \
     --port=8888 \
@@ -29,7 +42,8 @@ CMD ["/bin/bash", "-c", "\
     --allow-root \
     --NotebookApp.token='' \
     --NotebookApp.password='' & \
-  echo 'Starting ComfyUI :8188' && \
+  \
+  echo 'Starting ComfyUI on :8188' && \
   cd /opt/app/ComfyUI && \
-  /opt/app/.venv/bin/python main.py --listen 0.0.0.0 --port 8188 \
+  exec /opt/app/.venv/bin/python main.py --listen 0.0.0.0 --port 8188 \
 "]
