@@ -8,12 +8,13 @@ RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     ipykernel==6.29.3
 
 # --------------------------------------------------
-# RunPod-safe workspace links
+# Prepare persistent workspace directories
 # --------------------------------------------------
-RUN mkdir -p /workspace/models /workspace/output /workspace/custom_nodes && \
-    ln -s /workspace/models /opt/app/ComfyUI/models && \
-    ln -s /workspace/output /opt/app/ComfyUI/output
-    ln -s /workspace/custom_nodes /opt/app/ComfyUI/custom_nodes
+RUN mkdir -p \
+      /workspace/models \
+      /workspace/output \
+      /workspace/custom_nodes \
+      /workspace/user
 
 EXPOSE 8188 8888
 
@@ -22,19 +23,39 @@ EXPOSE 8188 8888
 # --------------------------------------------------
 CMD ["/bin/bash", "-c", "\
   set -e && \
-  echo 'Ensuring persistent ComfyUI user directory...' && \
-  mkdir -p /workspace/user && \
+  echo '--- Initializing ComfyUI persistent directories ---' && \
+  \
+  # ---------------- USER DIRECTORY ---------------- \
   if [ ! -L /opt/app/ComfyUI/user ]; then \
     if [ -d /opt/app/ComfyUI/user ]; then \
-      echo 'Migrating existing ComfyUI user data to /workspace...' && \
+      echo 'Migrating existing ComfyUI user data...' && \
       mv /opt/app/ComfyUI/user/* /workspace/user/ 2>/dev/null || true && \
       rm -rf /opt/app/ComfyUI/user; \
     fi; \
     ln -s /workspace/user /opt/app/ComfyUI/user; \
   fi && \
-  echo 'User directory ready.' && \
   \
+  # ---------------- MODELS ---------------- \
+  if [ ! -L /opt/app/ComfyUI/models ]; then \
+    rm -rf /opt/app/ComfyUI/models && \
+    ln -s /workspace/models /opt/app/ComfyUI/models; \
+  fi && \
+  \
+  # ---------------- OUTPUT ---------------- \
+  if [ ! -L /opt/app/ComfyUI/output ]; then \
+    rm -rf /opt/app/ComfyUI/output && \
+    ln -s /workspace/output /opt/app/ComfyUI/output; \
+  fi && \
+  \
+  # ---------------- CUSTOM NODES ---------------- \
+  if [ ! -L /opt/app/ComfyUI/custom_nodes ]; then \
+    rm -rf /opt/app/ComfyUI/custom_nodes && \
+    ln -s /workspace/custom_nodes /opt/app/ComfyUI/custom_nodes; \
+  fi && \
+  \
+  echo 'Persistent directories ready.' && \
   echo 'Python:' && /opt/app/.venv/bin/python --version && \
+  \
   echo 'Starting JupyterLab (no auth) on :8888' && \
   /opt/app/.venv/bin/jupyter lab \
     --ip=0.0.0.0 \
