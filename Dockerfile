@@ -10,9 +10,10 @@ RUN /opt/app/.venv/bin/pip install --no-cache-dir \
 # --------------------------------------------------
 # RunPod-safe workspace links
 # --------------------------------------------------
-RUN mkdir -p /workspace/models /workspace/output && \
+RUN mkdir -p /workspace/models /workspace/output /workspace/custom_nodes && \
     ln -s /workspace/models /opt/app/ComfyUI/models && \
     ln -s /workspace/output /opt/app/ComfyUI/output
+    ln -s /workspace/custom_nodes /opt/app/ComfyUI/custom_nodes
 
 EXPOSE 8188 8888
 
