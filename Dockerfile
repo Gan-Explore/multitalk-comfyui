@@ -1,4 +1,4 @@
-FROM ghcr.io/gan-explore/multitalk-comfyui-base:v1.4.7
+FROM ghcr.io/gan-explore/multitalk-comfyui-base:v1.4.8
 
 # --------------------------------------------------
 # Jupyter (auth disabled)
@@ -11,10 +11,10 @@ RUN /opt/app/.venv/bin/pip install --no-cache-dir \
 # Prepare persistent workspace directories
 # --------------------------------------------------
 RUN mkdir -p \
-      /workspace/models \
-      /workspace/output \
-      /workspace/custom_nodes \
-      /workspace/user
+    /workspace/models \
+    /workspace/output \
+    /workspace/custom_nodes \
+    /workspace/user
 
 EXPOSE 8188 8888
 
@@ -23,33 +23,30 @@ EXPOSE 8188 8888
 # --------------------------------------------------
 CMD ["/bin/bash", "-c", "\
   set -e && \
-  echo '--- Initializing ComfyUI persistent directories ---' && \
+  echo 'Initializing ComfyUI persistent directories...' && \
   \
-  # ---------------- USER DIRECTORY ---------------- \
+  mkdir -p /workspace/user /workspace/models /workspace/output /workspace/custom_nodes && \
+  \
   if [ ! -L /opt/app/ComfyUI/user ]; then \
     if [ -d /opt/app/ComfyUI/user ]; then \
-      echo 'Migrating existing ComfyUI user data...' && \
-      mv /opt/app/ComfyUI/user/* /workspace/user/ 2>/dev/null || true && \
+      mv /opt/app/ComfyUI/user/* /workspace/user/ 2>/dev/null || true; \
       rm -rf /opt/app/ComfyUI/user; \
     fi; \
     ln -s /workspace/user /opt/app/ComfyUI/user; \
   fi && \
   \
-  # ---------------- MODELS ---------------- \
   if [ ! -L /opt/app/ComfyUI/models ]; then \
-    rm -rf /opt/app/ComfyUI/models && \
+    rm -rf /opt/app/ComfyUI/models; \
     ln -s /workspace/models /opt/app/ComfyUI/models; \
   fi && \
   \
-  # ---------------- OUTPUT ---------------- \
   if [ ! -L /opt/app/ComfyUI/output ]; then \
-    rm -rf /opt/app/ComfyUI/output && \
+    rm -rf /opt/app/ComfyUI/output; \
     ln -s /workspace/output /opt/app/ComfyUI/output; \
   fi && \
   \
-  # ---------------- CUSTOM NODES ---------------- \
   if [ ! -L /opt/app/ComfyUI/custom_nodes ]; then \
-    rm -rf /opt/app/ComfyUI/custom_nodes && \
+    rm -rf /opt/app/ComfyUI/custom_nodes; \
     ln -s /workspace/custom_nodes /opt/app/ComfyUI/custom_nodes; \
   fi && \
   \
