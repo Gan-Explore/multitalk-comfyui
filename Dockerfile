@@ -1,4 +1,4 @@
-FROM ghcr.io/gan-explore/multitalk-comfyui-base:v1.4.6
+FROM ghcr.io/gan-explore/multitalk-comfyui-base:v1.4.7
 
 # --------------------------------------------------
 # Jupyter (auth disabled)
