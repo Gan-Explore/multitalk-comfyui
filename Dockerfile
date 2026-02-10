@@ -1,4 +1,4 @@
-FROM ghcr.io/gan-explore/multitalk-comfyui-base:v1.4.8
+FROM ghcr.io/gan-explore/multitalk-comfyui-base:v1.4.9
 
 # --------------------------------------------------
 # Jupyter (auth disabled)
@@ -6,6 +6,12 @@ FROM ghcr.io/gan-explore/multitalk-comfyui-base:v1.4.8
 RUN /opt/app/.venv/bin/pip install --no-cache-dir \
     jupyterlab==4.1.6 \
     ipykernel==6.29.3
+
+# --------------------------------------------------
+# WanVideo / MultiTalk runtime dependencies
+# --------------------------------------------------
+RUN /opt/app/.venv/bin/pip install --no-cache-dir \
+    accelerate==0.33.0
 
 # --------------------------------------------------
 # Prepare persistent workspace directories
